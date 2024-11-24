@@ -2,24 +2,48 @@
 # Refactor the code based on your business logic.
 
 version: "2"
-name: "Work Tracker"
-description: "Logs a message when a work item is created"
+name: "Customer Context Summarizer"
+description: "Summarizes relevant customer context when a new ticket or conversation is initiated."
 
 # This is the name displayed in DevRev where the Snap-In takes actions using the token of this service account.
 service_account:
-  display_name: DevRev Bot
+  display_name: CustomerBot
 
 # Add any external connection, reference: https://docs.devrev.ai/snap-ins/concepts#connection.
+connections:
+  - name: devrev-api
+    display_name: Devrev API
+    type: api
+    description: Integration with DevRev APIs to retrieve client information.
+
+  - name: slack-api
+    display_name: Slack API connection
+    type: api
+    description: Integration with Slack to gather communication history
 
 # Add organization level inputs, reference: https://docs.devrev.ai/snap-ins/references/inputs.
 inputs:
   organization:
-    - name: sample_value
-      description: Sample input value.
-      field_type: text
-      default_value: "primary"
+    - name: devrev_api_key
+      description: API key for accesing DevRev data. Stored in keyring
+      field_type: keyring
       ui:
-        display_name: Sample Value
+        display_name: Devrev API key
+
+    - name: slack_api_key
+      description: API key for Slack integration. Stored in keyring
+      field_type: keyring
+      ui:
+        display_name: Slack API key
+
+    - name: data_sources
+      description: 
+      field_type: keyring
+      ui:
+        display_name: Slack API key
+
+
+
 
 # Event source reference: https://docs.devrev.ai/snap-ins/references/event_sources#supported-event-source-types-and-their-event-types.
 event_sources:
