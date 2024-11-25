@@ -1,5 +1,5 @@
 # For reference: https://docs.devrev.ai/snap-ins/references/manifest.
-# Refactor the code based on your business logic.
+
 
 version: "2"
 name: "Customer Context Summarizer"
@@ -19,28 +19,28 @@ connections:
   - name: slack-api
     display_name: Slack API connection
     type: api
-    description: Integration with Slack to gather communication history
+    description: Integration with Slack to gather communication history.
 
 # Add organization level inputs, reference: https://docs.devrev.ai/snap-ins/references/inputs.
 inputs:
   organization:
     - name: devrev_api_key
-      description: API key for accesing DevRev data. Stored in keyring
-      field_type: keyring
+      description: "API key for accesing DevRev data. Stored in keyring"
+      field_type: text
       ui:
         display_name: Devrev API key
 
     - name: slack_api_key
-      description: API key for Slack integration. Stored in keyring
-      field_type: keyring
+      description: "API key for Slack integration. Stored in keyring"
+      field_type: text
       ui:
         display_name: Slack API key
 
     - name: data_sources
-      description: 
-      field_type: keyring
+      description: "Comma-separated list of data sources to include (e.g., tickets, conversations, Slack messages)."
+      field_type: text
       ui:
-        display_name: Slack API key
+        display_name: Data scources
 
 
 
@@ -49,17 +49,25 @@ inputs:
 event_sources:
   organization:
     - name: devrev-event-source
-      description: Event source listening on DevRev events.
+      description: "Event source listening on DevRev events, such as ticket creation and conversation initiation."
       display_name: DevRev events listener
       type: devrev-webhook
       config:
         event_types:
           - work_created
+          - conversation_created
 
 # Functions reference: https://docs.devrev.ai/snap-ins/references/functions.
 functions:
   - name: on_work_creation
-    description: function to trigger on work creation
+    description: "Triggered when new ticket or work item is created. Fetches and summarizes customer context"
+    runtime: nodejs16
+    handler: function/onWorkCreation.handler
+
+  - name: on_conversation_creation
+    description: "Triggered when new conversation is started. Fetches and summarizes customer context"
+    runtime: nodejs16
+    handler: function/onConversationCreation.handler
 
 # Automations reference: https://docs.devrev.ai/snap-ins/concepts#automation.
 automations:
@@ -68,3 +76,9 @@ automations:
     event_types:
       - work_created
     function: on_work_creation
+
+  - name: handle-conversation-created-event
+    source: devrev-event-source
+    event_types:
+      - conversation_created
+    function: on_conversation_creation
